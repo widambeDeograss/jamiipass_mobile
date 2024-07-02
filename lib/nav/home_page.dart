@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:jamiipass_mobile/constants/app_constants.dart';
@@ -6,6 +8,7 @@ import 'package:jamiipass_mobile/widgets/app_large_text.dart';
 import 'package:jamiipass_mobile/widgets/app_small_text.dart';
 import 'package:provider/provider.dart';
 
+import '../api/api.dart';
 import '../api/identity_cache.dart';
 import '../configs/langConfg/localization/localization_constants.dart';
 import '../providers/user_management_provider.dart';
@@ -22,6 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> identityData = [];
   bool isLoading = true;
+  dynamic stats;
 
   @override
   void initState() {
@@ -36,9 +40,17 @@ class _HomePageState extends State<HomePage> {
     try {
       final data = await fetchIdentityData(
           "${AppConstants.apiBaseUrl}${AppConstants.getIdentitiesFromNtwork}?fcn=GetIdentitiesByUserID&&args=$user");
+       var res = await CallApi().authenticatedRequest({},
+          '${AppConstants.apiBaseUrl}${AppConstants.homeStats}/$user',
+          'get',
+          "hdhjd"
+          );
+
+          print(res);
       setState(() {
         identityData = data;
         isLoading = false;
+        stats = json.decode(res);
       });
     } catch (error) {
       setState(() {
@@ -58,321 +70,332 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+      final userAuthProvider =
+        Provider.of<UserAuthProvider>(context, listen: false);
+    final user = userAuthProvider.authState.user;
     return Center(
         child: Scaffold(
       // appBar: AppBar(),
       backgroundColor: AppColors.buttonBackground,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 60, left: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppLargeText(
-                        text:
-                            "${getTranslated(context, "home_welcm").toString()}, Widambe",
-                        size: 20,
+      body: SizedBox(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(top: 60, left: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppLargeText(
+                          text:
+                              "${getTranslated(context, "home_welcm").toString()}, ${user.lastName}",
+                          size: 20,
+                        ),
+                        AppSmallText(
+                          text:
+                              getTranslated(context, "home_welcm_txt").toString(),
+                          size: 14,
+                        )
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          // color: Colors.grey.withOpacity(0.5),
+                               image: DecorationImage(image: 
+                                user.profile == null ? const NetworkImage("https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1719906880~exp=1719910480~hmac=99c3f74ad8d7efd05f67d32f288897ebe28a16b877c7d1dd3159fecc2659c173&w=900") :NetworkImage("${AppConstants.mediaBaseUrl}/${user.profile}") ,
+                             fit: BoxFit.cover
+                          ),
+                    
+                          ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Container(
+                // height: 200,
+                margin: EdgeInsets.only(left: 20, right: 20),
+                width: double.maxFinite,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.mainColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 20),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.grey.withOpacity(0.3)),
+                      child: const Icon(
+                        Icons.add_circle_outline,
+                        color: Colors.white,
                       ),
-                      AppSmallText(
-                        text:
-                            getTranslated(context, "home_welcm_txt").toString(),
-                        size: 14,
-                      )
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.grey.withOpacity(0.5)),
-                  )
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Container(
-              // height: 200,
-              margin: EdgeInsets.only(left: 20, right: 20),
-              width: double.maxFinite,
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.mainColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(right: 20),
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.grey.withOpacity(0.3)),
-                    child: const Icon(
-                      Icons.add_circle_outline,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    AppLargeText(
+                      text: getTranslated(context, "home_hero_title").toString(),
+                      size: 13,
                       color: Colors.white,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  AppLargeText(
-                    text: getTranslated(context, "home_hero_title").toString(),
-                    size: 13,
-                    color: Colors.white,
-                  ),
-                  AppSmallText(
-                    text: getTranslated(context, "home_hero_dsc").toString(),
-                    color: Colors.white,
-                    size: 11,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    width: double.maxFinite,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              10), // Set border radius here
+                    AppSmallText(
+                      text: getTranslated(context, "home_hero_dsc").toString(),
+                      color: Colors.white,
+                      size: 11,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: double.maxFinite,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10), // Set border radius here
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, '/request_identity_select_org');
+                        },
+                        child: Text(
+                          getTranslated(context, "home_hero_btn").toString(),
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13),
                         ),
                       ),
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, '/request_identity_select_org');
-                      },
-                      child: Text(
-                        getTranslated(context, "home_hero_btn").toString(),
-                        style: const TextStyle(
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 150,
+                    // Adjusted margin
+                    width: MediaQuery.of(context).size.width *
+                        0.45, // Used MediaQuery for device width
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
                             color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13),
-                      ),
+                          ),
+                          child: const Icon(
+                            Icons.account_box_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppSmallText(
+                                  text: getTranslated(
+                                          context, "home_total_identities")
+                                      .toString(),
+                                  size: 10,
+                                  color: AppColors.mainTextColor,
+                                ),
+                                AppLargeText(
+                                  text:
+                                      "${identityData.length} ${getTranslated(context, "identity").toString()}",
+                                  size: 12,
+                                  color: AppColors.bigTextColor,
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/identities');
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 5),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: AppColors.buttonBackground)),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                    height: 150,
+                    // Adjusted margin
+                    width: MediaQuery.of(context).size.width *
+                        0.45, // Used MediaQuery for device width
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.accentColor,
+                          ),
+                          child: const Icon(
+                            Icons.add_card_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppSmallText(
+                                  text:
+                                      getTranslated(context, "home_total_shared")
+                                          .toString(),
+                                  size: 12,
+                                  color: AppColors.mainTextColor,
+                                ),
+                                AppLargeText(
+                                  text:
+                                      "${stats?['data'][0]['count']} ${getTranslated(context, "identity").toString()}",
+                                  size: 10,
+                                  color: AppColors.bigTextColor,
+                                ),
+                              ],
+                            ),
+                            GestureDetector(
+                                  onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const AllIdentityRequests(),
+                                            ));
+                                      },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 5),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: AppColors.buttonBackground)),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 150,
-                  // Adjusted margin
-                  width: MediaQuery.of(context).size.width *
-                      0.45, // Used MediaQuery for device width
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 20),
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: Colors.black,
-                        ),
-                        child: const Icon(
-                          Icons.account_box_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppSmallText(
-                                text: getTranslated(
-                                        context, "home_total_identities")
-                                    .toString(),
-                                size: 10,
-                                color: AppColors.mainTextColor,
-                              ),
-                              AppLargeText(
-                                text:
-                                    "4 ${getTranslated(context, "identity").toString()}",
-                                size: 12,
-                                color: AppColors.bigTextColor,
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/identities');
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 5),
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: AppColors.buttonBackground)),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  height: 150,
-                  // Adjusted margin
-                  width: MediaQuery.of(context).size.width *
-                      0.45, // Used MediaQuery for device width
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 20),
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          color: AppColors.accentColor,
-                        ),
-                        child: const Icon(
-                          Icons.add_card_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppSmallText(
-                                text:
-                                    getTranslated(context, "home_total_shared")
-                                        .toString(),
-                                size: 12,
-                                color: AppColors.mainTextColor,
-                              ),
-                              AppLargeText(
-                                text:
-                                    "10 ${getTranslated(context, "identity").toString()}",
-                                size: 10,
-                                color: AppColors.bigTextColor,
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                                onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const AllIdentityRequests(),
-                                          ));
-                                    },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 5),
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: AppColors.buttonBackground)),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppLargeText(
-                        text:
-                            getTranslated(context, "home_your_ids").toString(),
-                        size: 13,
-                        color: AppColors.bigTextColor,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/identities');
-                        },
-                        child: AppSmallText(
-                          text: getTranslated(context, "home_view_btn")
-                              .toString(),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppLargeText(
+                          text:
+                              getTranslated(context, "home_your_ids").toString(),
                           size: 13,
                           color: AppColors.bigTextColor,
                         ),
-                      )
-                    ],
-                  ),
-                ],
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/identities');
+                          },
+                          child: AppSmallText(
+                            text: getTranslated(context, "home_view_btn")
+                                .toString(),
+                            size: 13,
+                            color: AppColors.bigTextColor,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              height: 250,
-              child:  Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15),
-                child: _buildTopThreeIdentities(identityData),
+              Container(
+                height: 250,
+                child:  Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                  child: _buildTopThreeIdentities(identityData),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ));

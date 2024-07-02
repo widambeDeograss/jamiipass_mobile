@@ -197,6 +197,7 @@ class _ShareIdentitiesState extends State<ShareIdentities> {
           child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppSmallText(
                       text: widget.typeShare == "user"
@@ -204,33 +205,39 @@ class _ShareIdentitiesState extends State<ShareIdentities> {
                               .toString()
                           : getTranslated(context, "share_id_send_corp")
                               .toString()),
-                  IconButton(
-                    onPressed: () => {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            content: SizedBox(
-                              width: 300,
-                              height: 400,
-                              child: DatePicker(
-                                minDate: DateTime(2024, 1, 1),
-                                maxDate: DateTime(2024, 12, 31),
-                                onDateSelected: (value) {
-                                  setState(() {
-                                    corruptDate = value;
-                                  });
-                                  // Handle selected date
-                                  Navigator.of(context)
-                                      .pop(); // Close the dialog
-                                },
-                              ),
-                            ),
-                          );
+                  Row(
+                    children: [
+                     
+                      IconButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: SizedBox(
+                                  width: 300,
+                                  height: 400,
+                                  child: DatePicker(
+                                    minDate: DateTime(2024, 1, 1),
+                                    maxDate: DateTime(2024, 12, 31),
+                                    onDateSelected: (value) {
+                                      setState(() {
+                                        corruptDate = value;
+                                      });
+                                      // Handle selected date
+                                      Navigator.of(context)
+                                          .pop(); // Close the dialog
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          )
                         },
-                      )
-                    },
-                    icon: const Icon(Icons.calendar_month_sharp),
+                        icon: const Icon(Icons.calendar_month_sharp),
+                      ),
+                       AppSmallText(text: "Expirely date"),
+                    ],
                   )
                 ],
               ),
@@ -303,8 +310,18 @@ class _ShareIdentitiesState extends State<ShareIdentities> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
                               color: AppColors.buttonBackground,
-                              image: const DecorationImage(
-                                  image: AssetImage("assets/jamii_logo.jpg"),
+                              image:  DecorationImage(
+                                     image: AssetImage(id['organization'] == "NIDA"
+                                      ? "assets/nida.jpg"
+                                      : id['organization'] == "NHIF"
+                                          ? "assets/nhif.jpg"
+                                          : id['organization'] == "DIT"
+                                              ? "assets/dit.png"
+                                              : id['organization'] == "RITA"
+                                                  ? "assets/rita.jpeg"
+                                                  : id['organization'] == "TRA"
+                                                      ? "assets/tra.png"
+                                                      : "assets/nida.jpg"),
                                   fit: BoxFit.cover)),
                         ),
                         Container(

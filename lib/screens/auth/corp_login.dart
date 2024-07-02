@@ -151,7 +151,7 @@ class _CorporateLoginScreenState extends State<CorporateLoginScreen> {
                         borderSide: BorderSide.none,
                       ),
                       hintText:
-                          getTranslated(context, "identity_request_card_no")
+                          getTranslated(context, "register_password")
                               .toString(),
                       hintStyle: const TextStyle(
                         color: Colors.black12,

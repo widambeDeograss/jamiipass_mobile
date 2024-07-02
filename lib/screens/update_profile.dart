@@ -13,6 +13,7 @@ import '../configs/langConfg/localization/localization_constants.dart';
 import '../constants/custom_colors.dart';
 import '../providers/user_management_provider.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({Key? key}) : super(key: key);
@@ -24,55 +25,51 @@ class UpdateProfileScreen extends StatefulWidget {
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   TextEditingController userEmailController = TextEditingController();
   TextEditingController userPhoneController = TextEditingController();
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   XFile? _image;
   final picker = ImagePicker();
   bool isLoading = false;
   bool isPicLoading = false;
+  bool isPasswordEditing = false;
   String? profileUrl = "";
-
-  get http => null;
-
 
   void setProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       profileUrl = prefs.getString("user_file");
     });
-  
   }
 
+  @override
   void initState() {
     super.initState();
     setProfile();
-    final userAuthProvider = Provider.of<UserAuthProvider>(context, listen: false);
+    final userAuthProvider =
+        Provider.of<UserAuthProvider>(context, listen: false);
     User user = userAuthProvider.authState.user;
     userEmailController.text = user.email!;
     userPhoneController.text = user.phone!;
-
   }
 
   Future<void> _uploadProfilePic() async {
-     final userAuthProvider = Provider.of<UserAuthProvider>(context, listen: false);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userAuthProvider =
+        Provider.of<UserAuthProvider>(context, listen: false);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     User user = userAuthProvider.authState.user;
     if (_image == null) return;
     setState(() {
       isPicLoading = true;
     });
 
-    
+    final String URL =
+        "${AppConstants.apiBaseUrl}app/citizen/update/${user.id}/profile";
 
-    final String URL = "${AppConstants.apiBaseUrl}app/citizen/update/${user.id}/profile";
+    final response = await CallApi().uploadWithFile(
+        {"files": await MultipartFile.fromFile(_image!.path)}, URL);
 
-
-    
-    // final request = http.MultipartRequest('POST', Uri.parse(AppConstants.apiBaseUrl + AppConstants.userUpdateProfilePic));
-    // request.files.add(await http.MultipartFile.fromPath('profile_pic', _image));
-    final response = await CallApi().uploadWithFile({"files": await MultipartFile.fromFile(_image!.path)}, URL);
-    // var body = json.decode(response);
-    
     if (response['success']) {
- 
       Fluttertoast.showToast(
           msg: "Profile picture updated successfully",
           toastLength: Toast.LENGTH_SHORT,
@@ -81,38 +78,35 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0);
-           print("======================================================");
-          print(response['user']['profile']);
-          prefs.setString('user_file', response['user']['profile']);
-        
-          setState(() {
-            
-          }); 
-      print('Profile picture updated successfully');
+      prefs.setString('user_file', response['user']['profile']);
+      setState(() {});
     } else {
       Fluttertoast.showToast(
-          msg: "Error:Failed to update profile picture",
+          msg: "Error: Failed to update profile picture",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-      // Handle error
-      print('Failed to update profile picture');
     }
     setState(() {
       isPicLoading = false;
     });
   }
 
-
   Future<void> _updateProfile() async {
+    final userAuthProvider =
+        Provider.of<UserAuthProvider>(context, listen: false);
+    User user = userAuthProvider.authState.user;
     setState(() {
       isLoading = true;
     });
-    final response = await http.put(
-      Uri.parse(AppConstants.apiBaseUrl + AppConstants.userUpdateProfilePic),
+
+    final String URL =
+        "${AppConstants.apiBaseUrl}app/citizen/update/${user.id}";
+    final response = await http.post(
+      Uri.parse(URL),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -121,10 +115,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         'phone': userPhoneController.text,
       }),
     );
-    final resposeBody = json.decode(response);
-    print(resposeBody);
 
-    if (resposeBody.statusCode == 200) {
+    if (response.statusCode == 200) {
       Fluttertoast.showToast(
           msg: "Profile updated successfully",
           toastLength: Toast.LENGTH_SHORT,
@@ -133,24 +125,19 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0);
-       
-      // Handle success
-      print('Profile updated successfully');
     } else {
       Fluttertoast.showToast(
-          msg: "Error:Failed to update profile",
+          msg: "Error: Failed to update profile",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-      // Handle error
-      print('Failed to update profile');
     }
 
     setState(() {
-      isLoading = true;
+      isLoading = false;
     });
   }
 
@@ -164,28 +151,91 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     });
   }
 
+  void _togglePasswordEditing() {
+    setState(() {
+      isPasswordEditing = !isPasswordEditing;
+    });
+  }
 
-  
+Future<void> _updatePassword() async {
+  final userAuthProvider = Provider.of<UserAuthProvider>(context, listen: false);
+  User user = userAuthProvider.authState.user;
+
+  String oldPassword = oldPasswordController.text.trim();
+  String confirmPassword = confirmPasswordController.text.trim();
+
+  // Make API request to update password
+  final String URL = "${AppConstants.apiBaseUrl}app/citizen/update/${user.id}/password";
+  final response = await http.post(
+    Uri.parse(URL),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'old_password': oldPassword,
+      'new_password': confirmPassword,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    // Password updated successfully
+    Fluttertoast.showToast(
+      msg: "Password updated successfully",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+
+    // Clear password fields
+    oldPasswordController.clear();
+    confirmPasswordController.clear();
+
+    // Exit password editing mode
+    setState(() {
+      isPasswordEditing = false;
+    });
+  } else {
+    // Failed to update password
+    Fluttertoast.showToast(
+      msg: "Error: Failed to update password",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  setState(() {
+    isLoading = false;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
     final userAuthProvider =
-    Provider.of<UserAuthProvider>(context, listen: false);
+        Provider.of<UserAuthProvider>(context, listen: false);
     User user = userAuthProvider.authState.user;
 
     return Scaffold(
       backgroundColor: AppColors.buttonBackground,
       appBar: AppBar(
         backgroundColor: AppColors.buttonBackground,
-        title:
-            Text(getTranslated(context, "profile_edit").toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        title: Text(
+          getTranslated(context, "profile_edit").toString(),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              // -- IMAGE with ICON
               Stack(
                 children: [
                   SizedBox(
@@ -193,11 +243,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     height: 120,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(100),
-                        child: isPicLoading? const CircularProgressIndicator(color: AppColors.mainColor,):
-                         Image(
-                          image: NetworkImage("${AppConstants.mediaBaseUrl}/${profileUrl}"),
-                          fit: BoxFit.cover,
-                        )),
+                        child: isPicLoading
+                            ? const CircularProgressIndicator(
+                                color: AppColors.mainColor,
+                              )
+                            : Image(
+                                image: NetworkImage(
+                                    "${AppConstants.mediaBaseUrl}/$profileUrl"),
+                                fit: BoxFit.cover,
+                              )),
                   ),
                   Positioned(
                     bottom: 0,
@@ -218,16 +272,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 ],
               ),
               const SizedBox(height: 50),
-
-              // -- Form Fields
               Form(
                 child: Column(
                   children: [
                     TextFormField(
                       enabled: false,
-                      decoration:  InputDecoration(
+                      decoration: InputDecoration(
                           label: Text("${user.firstName} ${user.lastName}"),
-                          prefixIcon: Icon(Icons.person)),
+                          prefixIcon: const Icon(Icons.person)),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -243,19 +295,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           prefixIcon: Icon(Icons.phone)),
                     ),
                     const SizedBox(height: 20),
-                    // TextFormField(
-                    //   obscureText: true,
-                    //   decoration: InputDecoration(
-                    //     label: const Text("Password"),
-                    //     prefixIcon: const Icon(Icons.fingerprint),
-                    //     suffixIcon: IconButton(
-                    //         icon: const Icon(Icons.remove_red_eye_outlined),
-                    //         onPressed: () {}),
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 10),
-
-                    // -- Form Submit Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -264,32 +303,68 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             backgroundColor: Colors.blue,
                             side: BorderSide.none,
                             shape: const StadiumBorder()),
-                        child: isLoading? const CircularProgressIndicator(color: Colors.white, strokeWidth: 1,):
-                        const Text("Edit Profile",
-                            style: TextStyle(color: Colors.white)),
+                        child: isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                              )
+                            : Text(
+                                getTranslated(context, "profile_edit")
+                                    .toString(),
+                                style: const TextStyle(color: Colors.white)),
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // -- Created Date and Delete Button
+                    if (isPasswordEditing)
+                      Column(
+                        children: [
+                          TextFormField(
+                            controller: oldPasswordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              label: Text("Old Password"),
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: confirmPasswordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              label: Text("New Password"),
+                              prefixIcon: Icon(Icons.lock),
+                            ),
+                          ),
+                        
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _updatePassword,
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  side: BorderSide.none,
+                                  shape: const StadiumBorder()),
+                              child: const Text(
+                                "Update Password",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text.rich(
                           TextSpan(
-                            text: "Joined",
+                            text: "",
                             style: TextStyle(fontSize: 12),
-                            children: [
-                              TextSpan(
-                                  text: "JoinedAt",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12))
-                            ],
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _togglePasswordEditing,
                           style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   Colors.redAccent.withOpacity(0.1),
@@ -297,7 +372,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               foregroundColor: Colors.red,
                               shape: const StadiumBorder(),
                               side: BorderSide.none),
-                          child: const Text("Edit Password"),
+                          child: Text(isPasswordEditing
+                              ? "Cancel"
+                              : "Edit Password"),
                         ),
                       ],
                     )

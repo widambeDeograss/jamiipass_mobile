@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jamiipass_mobile/constants/custom_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,9 @@ class LogoutDialog extends StatelessWidget {
             userAuthProvider.logoutUser();
             // Perform logout actions here
             Navigator.of(context).pop(); // Close the dialog
+
+                Navigator.of(context).pop();
+            SystemNavigator.pop();
           },
           child: const Text('Logout'),
         ),

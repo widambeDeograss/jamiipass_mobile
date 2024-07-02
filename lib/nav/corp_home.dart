@@ -26,7 +26,8 @@ class CorporateHomeScreen extends StatefulWidget {
 
 class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
   List<IdHistory> identityShareHistories = [];
-  bool isLoading = false;
+  List<IdHistory> identitiesSharedInactive  = [];
+   bool isLoading = false;
   final List<Map<String, dynamic>> carouselItems = [
     {
       'precaution': 'Receive shared Identity with ease',
@@ -61,6 +62,7 @@ class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
       var body = json.decode(res);
       IdHistoryList idList = IdHistoryHelper.filterIdHistory(body['data']);
       identityShareHistories = idList.activeIdHistory;
+      identitiesSharedInactive =idList.inActiveIdHistory;
     } catch (error) {
       Fluttertoast.showToast(
           msg: "Error:Failing to get histories check network and try again",
@@ -121,14 +123,14 @@ class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
                   Row(
                     children: [
                       Container(
-                        // margin: const EdgeInsets.only(right: 20),
-                        width: 24,
-                        height: 24,
+                        margin: const EdgeInsets.only(right: 10),
+                       width: 34,
+                    height: 34,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             color: Colors.grey.withOpacity(0.5),
                             image: DecorationImage(image: 
-                              corp.file != null ? NetworkImage("https://www.freepik.com/free-vector/blue-circle-with-white-user_145857007.htm#query=user&position=0&from_view=keyword&track=sph&uuid=ef4ac314-a7a0-40bb-be40-7b05a4cb81e2"):  NetworkImage("${AppConstants.mediaBaseUrl}/${corp.file}"),
+                                corp.file == null ? const NetworkImage("https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1719906880~exp=1719910480~hmac=99c3f74ad8d7efd05f67d32f288897ebe28a16b877c7d1dd3159fecc2659c173&w=900") :NetworkImage("${AppConstants.mediaBaseUrl}/${corp.file}") ,
                               fit: BoxFit.cover
                             ),
 
@@ -198,7 +200,7 @@ class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
                                 ),
                                 AppLargeText(
                                   text:
-                                      "4 ${getTranslated(context, "identity").toString()}",
+                                      "${identityShareHistories.length} ${getTranslated(context, "identity").toString()}",
                                   size: 12,
                                   color: AppColors.bigTextColor,
                                 ),
@@ -250,27 +252,17 @@ class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const InactiveIdentityShares()),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 20),
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: AppColors.accentColor,
-                            ),
-                            child: const Icon(
-                              Icons.restore_from_trash,
-                              color: Colors.white,
-                            ),
+                        Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: AppColors.accentColor,
+                          ),
+                          child: const Icon(
+                            Icons.restore_from_trash,
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(
@@ -291,25 +283,35 @@ class _CorporateHomeScreenState extends State<CorporateHomeScreen> {
                                 ),
                                 AppLargeText(
                                   text:
-                                      "10 ${getTranslated(context, "identity").toString()}",
+                                      "${identitiesSharedInactive.length} ${getTranslated(context, "identity").toString()}",
                                   size: 10,
                                   color: AppColors.bigTextColor,
                                 ),
                               ],
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(right: 5),
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                      width: 1,
-                                      color: AppColors.buttonBackground)),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: Colors.black,
+                            GestureDetector(
+                                  onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const InactiveIdentityShares()),
+                            );
+                          },
+                              child: Container(
+                                margin: const EdgeInsets.only(right: 5),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1,
+                                        color: AppColors.buttonBackground)),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ],

@@ -55,6 +55,7 @@ dependencies:
   path_provider: ^2.0.11
   image_picker: ^0.8.4+1
   settings_ui: ^2.0.2
+  package_info_plus: ^4.2.0
 
 
 

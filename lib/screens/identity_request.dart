@@ -110,7 +110,7 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
             backgroundColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16.0);
-               setState(() {
+        setState(() {
           activeStep++;
         });
       } else {
@@ -183,6 +183,7 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
               stepShape: StepShape.rRectangle,
               stepBorderRadius: 15,
               borderThickness: 2,
+              enableStepTapping: false,
               // padding:EdgeInsetsGeometry.lerp(2, b, t),
               stepRadius: 23,
               finishedStepBorderColor: AppColors.mainColor,
@@ -193,6 +194,7 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
               unreachedStepBorderColor: Colors.blue,
               lineStyle: const LineStyle(defaultLineColor: Colors.blue),
               showLoadingAnimation: true,
+              
               steps: [
                 EasyStep(
                   customStep: ClipRRect(
@@ -368,7 +370,7 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
                                       borderSide: BorderSide.none,
                                     ),
                                     hintText: getTranslated(
-                                            context, "register_password")
+                                            context, "identity_request_card_no")
                                         .toString(),
                                     hintStyle: const TextStyle(
                                       color: Colors.black12,
@@ -417,7 +419,8 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          if (cardNumberController.text.isEmpty) {
+                                          if (cardNumberController
+                                              .text.isEmpty) {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(SnackBar(
                                               content: Text(getTranslated(
@@ -474,12 +477,12 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
                                     height: 20,
                                   ),
                                   Text(
-                                   getTranslated(context,
+                                    getTranslated(context,
                                             "identity_request_view_all_requests")
                                         .toString(),
-                                        style: TextStyle(
-                                          fontSize: 13, fontWeight:FontWeight.bold
-                                        ),
+                                    style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(
                                     height: 6,
@@ -557,15 +560,23 @@ class _IdentityRequestScrState extends State<IdentityRequestScr> {
                               borderRadius: BorderRadius.circular(5),
                               color: AppColors.buttonBackground,
                               image: DecorationImage(
-                                  image: AssetImage(widget.organization['org_name'] == "NIDA"
+                                  image: AssetImage(widget
+                                              .organization['org_name'] ==
+                                          "NIDA"
                                       ? "assets/nida.jpg"
-                                      : widget.organization['org_name'] == "NHIF"
+                                      : widget.organization['org_name'] ==
+                                              "NHIF"
                                           ? "assets/nhif.jpg"
-                                          : widget.organization['org_name'] == "DIT"
+                                          : widget.organization['org_name'] ==
+                                                  "DIT"
                                               ? "assets/dit.png"
-                                              : widget.organization['org_name'] == "RITA"
+                                              : widget.organization[
+                                                          'org_name'] ==
+                                                      "RITA"
                                                   ? "assets/rita.jpeg"
-                                                  :widget.organization['org_name'] == "TRA"
+                                                  : widget.organization[
+                                                              'org_name'] ==
+                                                          "TRA"
                                                       ? "assets/tra.png"
                                                       : "assets/nida.jpg"),
                                   fit: BoxFit.cover)),

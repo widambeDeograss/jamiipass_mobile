@@ -21,6 +21,8 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   var verification = '';
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
@@ -127,10 +129,12 @@ class _OtpScreenState extends State<OtpScreen> {
                     onPressed: () {
                       _verifyOtp();
                     },
-                    child: Text(
+                    child: isLoading ? CircularProgressIndicator() : Text(
                       getTranslated(context, "otp_btn").toString(),
                       style: const TextStyle(color: Colors.white),
-                    )),
+                    )
+                  
+                    ),
               ),
             ],
           ),
@@ -143,7 +147,9 @@ class _OtpScreenState extends State<OtpScreen> {
   _verifyOtp() async {
     final userAuthProvider =
         Provider.of<UserAuthProvider>(context, listen: false);
-
+     setState(() {
+       isLoading = true;
+     });
     if (widget.isCorp == "corp") {
       print(widget.corpId);
       final response =
@@ -173,6 +179,9 @@ class _OtpScreenState extends State<OtpScreen> {
             textColor: Colors.white,
             fontSize: 16.0);
       }
+       setState(() {
+       isLoading = false;
+     });
     } else {
       try {
         final response =
@@ -212,6 +221,10 @@ class _OtpScreenState extends State<OtpScreen> {
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 16.0);
+      } finally{
+         setState(() {
+       isLoading = false;
+     });
       }
     }
   }

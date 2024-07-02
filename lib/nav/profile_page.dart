@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jamiipass_mobile/constants/app_constants.dart';
 import 'package:jamiipass_mobile/constants/custom_colors.dart';
+import 'package:jamiipass_mobile/screens/AboutScreen.dart';
+import 'package:jamiipass_mobile/screens/PrivacyPolicy.dart';
 import 'package:jamiipass_mobile/screens/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -163,11 +165,23 @@ class _ProfilePageState extends State<ProfilePage> {
               ProfileMenuWidget(
                   title: getTranslated(context, "profile_policy").toString(),
                   icon: Icons.info,
-                  onPress: () {}),
+                  onPress: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PrivacyPolicyScreen()),
+                    );
+                  }),
               ProfileMenuWidget(
                   title: getTranslated(context, "profile_about").toString(),
                   icon: Icons.approval_outlined,
-                  onPress: () {}),
+                  onPress: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AboutScreen()),
+                    );
+                  }),
               ProfileMenuWidget(
                   title: getTranslated(context, "profile_logout").toString(),
                   icon: Icons.logout_outlined,

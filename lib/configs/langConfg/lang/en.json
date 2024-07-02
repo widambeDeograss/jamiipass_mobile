@@ -51,7 +51,7 @@
   "identity_request_step_one": "Select Identity",
   "identity_request_step_two": "Send Request",
   "identity_request_step_three": "Request Results",
-  "identity_request_card_no": "Card number",
+  "identity_request_card_no": "Card number/ Registration No.",
   "identity_request_Cancel": "Cancel",
   "identity_request_Continue": "Continue",
   "identity_request_view_all_requests":"View your Identity all requests",
@@ -79,8 +79,8 @@
   "share_screen_corp_tab": "Corporate",
   "share_id_title": "Share Identity",
   "share_id_btn": "Next",
-  "share_id_send_user": "Send Identities to a fellow Citizen",
-  "share_id_send_corp": "Send Identities to a Corporate",
+  "share_id_send_user": "Choose Identities",
+  "share_id_send_corp": "Choose Identities",
   "share_id_result": "Dear user you have succesfully shared your Identities, ask the user to scan the Qrcode below for asy access of shared data",
   "scanner_results_title": "Instant shared identities"
 }

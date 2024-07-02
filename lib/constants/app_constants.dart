@@ -42,6 +42,7 @@ class AppConstants {
   static const String identificationRequest =
       'app/org/create_identification_request';
   static const String allIdentificationRequest = 'app/citizen/all_id_requests';
+  static const String homeStats = 'app/citizen/stats';
   static const String getIdentitiesFromNtwork =
       'channels/mychannel/chaincodes/id';
   static const String networkLogin = 'users/login';
