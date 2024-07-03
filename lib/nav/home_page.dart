@@ -24,6 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> identityData = [];
+    List<dynamic> identityRequests = [];
   bool isLoading = true;
   dynamic stats;
 
@@ -46,9 +47,17 @@ class _HomePageState extends State<HomePage> {
           "hdhjd"
           );
 
+             var ress = await CallApi().authenticatedRequest({},
+          '${AppConstants.apiBaseUrl}${AppConstants.allIdentificationRequest}/$user',
+          'get',
+          "token");
+
           print(res);
+       var body = json.decode(ress);
+    
       setState(() {
         identityData = data;
+          identityRequests = body['data'];
         isLoading = false;
         stats = json.decode(res);
       });
@@ -77,7 +86,7 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
       // appBar: AppBar(),
       backgroundColor: AppColors.buttonBackground,
-      body: SizedBox(
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -317,7 +326,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 AppLargeText(
                                   text:
-                                      "${stats?['data'][0]['count']} ${getTranslated(context, "identity").toString()}",
+                                      "${identityRequests.length} ${getTranslated(context, "identity").toString()}",
                                   size: 10,
                                   color: AppColors.bigTextColor,
                                 ),
@@ -388,10 +397,10 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Container(
-                height: 250,
+                height: 300,
                 child:  Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
-                  child: _buildTopThreeIdentities(identityData),
+                  child: _buildTopThreeIdentities(identityData.reversed),
                 ),
               ),
             ],
@@ -431,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           margin: const EdgeInsets.only(right: 20),
                           width: 40,
-                          height: 50,
+                          height: 40,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color: AppColors.buttonBackground,

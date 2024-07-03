@@ -15,7 +15,7 @@ class AppConstants {
   // API URLS
   static const String apiBaseUrl = 'http://192.168.164.128:4000/';
   static const String mediaBaseUrl = 'http://192.168.164.128:4000';
-  static const String nidaBaseUrl = 'http://192.168.164.123:5000/api/nida_info';
+  static const String nidaBaseUrl = 'http://192.168.242.123:5000/api/nida_info';
   static const String apiCorpVerifyOtp =
       'http://192.168.164.128:4000/app/corp/auth/verify_corp_otp';
   static const String verifyPhoneUrl = 'user-management/register';

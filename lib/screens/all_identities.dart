@@ -115,8 +115,8 @@ class _IdentitiesScreenState extends State<IdentitiesScreen> {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(right: 20),
-                          width: 70,
-                          height: 70,
+                          width: 30,
+                          height: 40,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               color: AppColors.buttonBackground,
