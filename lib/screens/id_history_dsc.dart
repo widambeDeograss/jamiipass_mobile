@@ -66,8 +66,8 @@ class _IdentityHistoryScreenState extends State<IdentityHistoryScreen> {
                         Row(
                           children: [
                             Container(
-                              width: 70,
-                              height: 100,
+                              width: 60,
+                              height: 90,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: AppColors.buttonBackground,
@@ -79,7 +79,7 @@ class _IdentityHistoryScreenState extends State<IdentityHistoryScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

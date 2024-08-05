@@ -117,10 +117,10 @@ class _QRViewExampleState extends State<QRViewExample> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
-      // setState(() {
-      // result = scanData;
+      setState(() {
+      result = scanData;
       scannedData(scanData.code.toString());
-      // });
+      });
     });
   }
 
@@ -139,24 +139,24 @@ class _QRViewExampleState extends State<QRViewExample> {
   }
 
   void scannedData(String results) {
-    if (resultObtained == false) {
-      try {
-        List<dynamic>? data = jsonDecode(results);
-        if (data![0]['card'] is String) {
-          setState(() {
-            resultObtained = true;
-          });
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ScannerResults(
-                  scannerResults: data,
-                ),
-              ));
-        }
-      } catch (e) {
-        print(e);
+  print('Processing scanned data: $results');
+  if (!resultObtained) {
+    try {
+      List<dynamic>? data = jsonDecode(results);
+      if (data != null && data[0]['card'] is String) {
+        setState(() {
+          resultObtained = true;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScannerResults(scannerResults: data),
+          ),
+        );
       }
+    } catch (e) {
+      print('Error decoding JSON: $e');
     }
   }
+}
 }

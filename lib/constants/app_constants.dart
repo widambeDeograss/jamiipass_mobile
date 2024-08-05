@@ -13,20 +13,20 @@ class AppConstants {
 
 
   // API URLS
-  static const String apiBaseUrl = 'http://192.168.164.128:4000/';
-  static const String mediaBaseUrl = 'http://192.168.164.128:4000';
-  static const String nidaBaseUrl = 'http://192.168.242.123:5000/api/nida_info';
+  static const String apiBaseUrl = 'http://192.168.153.128:4000/';
+  static const String mediaBaseUrl = 'http://192.168.153.128:4000';
+  static const String nidaBaseUrl = 'http://192.168.181.19:5000/api/nida_info';
   static const String apiCorpVerifyOtp =
-      'http://192.168.164.128:4000/app/corp/auth/verify_corp_otp';
+      'http://192.168.153.128:4000/app/corp/auth/verify_corp_otp';
   static const String verifyPhoneUrl = 'user-management/register';
   static const String apiCorpLogin =
-      'http://192.168.164.128:4000/app/corp/auth/login';
+      'http://192.168.153.128:4000/app/corp/auth/login';
   static const String apiUserRegistration =
-      'http://192.168.164.128:4000/app/citizen/auth/register';
+      'http://192.168.153.128:4000/app/citizen/auth/register';
   static const String apiUserLogin =
-      'http://192.168.164.128:4000/app/citizen/auth/login';
+      'http://192.168.153.128:4000/app/citizen/auth/login';
   static const String apiUserVerifyOtp =
-      'http://192.168.164.128:4000/app/citizen/auth/verify_user_otp';
+      'http://192.168.153.128:4000/app/citizen/auth/verify_user_otp';
   static const String corpShareHistory = 'app/corp/share_history';
   static const String corpShareId = 'app/corp/share_id';
   static const String allOrgs = 'app/org/all_orgs';
